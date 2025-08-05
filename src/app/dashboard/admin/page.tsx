@@ -3,6 +3,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
+import { useState } from 'react';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -36,7 +37,9 @@ const formSchema = z.object({
   enabled: z.boolean().default(true),
 });
 
-const existingRules = [
+type Rule = z.infer<typeof formSchema>;
+
+const initialRules: Rule[] = [
   { role: 'Gamer', minDays: 7, minMessages: 50, enabled: true },
   { role: 'VIP', minDays: 30, minMessages: 200, enabled: true },
   { role: 'Moderator', minDays: 90, minMessages: 1000, enabled: false },
@@ -44,6 +47,8 @@ const existingRules = [
 
 export default function AdminPage() {
   const { toast } = useToast();
+  const [rules, setRules] = useState<Rule[]>(initialRules);
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -55,7 +60,7 @@ export default function AdminPage() {
   });
 
   function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
+    setRules((prevRules) => [...prevRules, values]);
     toast({
       title: 'Rule Saved!',
       description: `Rule for the "${values.role}" role has been successfully saved.`,
@@ -81,7 +86,7 @@ export default function AdminPage() {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Role to Assign</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <Select onValueChange={field.onChange} value={field.value}>
                       <FormControl>
                         <SelectTrigger>
                           <SelectValue placeholder="Select a role" />
@@ -168,8 +173,8 @@ export default function AdminPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {existingRules.map((rule) => (
-                <TableRow key={rule.role}>
+              {rules.map((rule, index) => (
+                <TableRow key={`${rule.role}-${index}`}>
                   <TableCell className="font-medium">{rule.role}</TableCell>
                   <TableCell>{rule.minDays}</TableCell>
                   <TableCell>{rule.minMessages}</TableCell>
