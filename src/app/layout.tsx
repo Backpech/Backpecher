@@ -3,7 +3,7 @@ import './globals.css';
 import { Toaster } from "@/components/ui/toaster"
 
 export const metadata: Metadata = {
-  title: 'RoleSync',
+  title: 'Backpech-Bot',
   description: 'Synchronize and manage Discord roles with AI-powered suggestions.',
 };
 
