@@ -1,48 +1,12 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Users } from "lucide-react";
+import { getUsersFromDiscord, type User } from "@/services/discord";
 
-const users = [
-  {
-    name: 'BytePioneer',
-    avatar: 'https://placehold.co/100x100.png',
-    roles: ['Admin', 'Developer', 'Early Supporter'],
-    initial: 'BP',
-  },
-  {
-    name: 'CodeWrangler',
-    avatar: 'https://placehold.co/100x100.png',
-    roles: ['Moderator', 'Gamer'],
-    initial: 'CW',
-  },
-  {
-    name: 'PixelMaverick',
-    avatar: 'https://placehold.co/100x100.png',
-    roles: ['Member', 'Designer', 'Music Enthusiast'],
-    initial: 'PM',
-  },
-  {
-    name: 'SynthWave',
-    avatar: 'https://placehold.co/100x100.png',
-    roles: ['Member', 'Gamer'],
-    initial: 'SW',
-  },
-    {
-    name: 'DataGuardian',
-    avatar: 'https://placehold.co/100x100.png',
-    roles: ['Moderator', 'VIP'],
-    initial: 'DG',
-  },
-  {
-    name: 'GlitchArtist',
-    avatar: 'https://placehold.co/100x100.png',
-    roles: ['Member', 'Artist'],
-    initial: 'GA',
-  },
-];
 
-export default function DashboardPage() {
+export default async function DashboardPage() {
+  const users = await getUsersFromDiscord();
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -54,7 +18,7 @@ export default function DashboardPage() {
         </div>
       </div>
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        {users.map((user, index) => (
+        {users.map((user: User, index: number) => (
           <Card key={index}>
             <CardHeader className="flex flex-row items-center space-x-4 space-y-0 pb-4">
               <Avatar>
