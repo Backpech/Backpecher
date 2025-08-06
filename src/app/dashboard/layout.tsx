@@ -11,7 +11,7 @@ export default function DashboardLayout({
       <header className="sticky top-0 z-40 flex h-16 items-center justify-between border-b bg-background px-4 sm:px-6 lg:px-8">
         <div className="flex items-center gap-2">
           <Icons.logo className="h-8 w-8 text-primary" />
-          <h1 className="text-xl font-bold">Backpech-Bot</h1>
+          <h1 className="font-headline text-xl font-bold">Backpech-Bot</h1>
         </div>
       </header>
       <div className="flex flex-1 flex-col">

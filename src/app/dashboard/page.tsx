@@ -8,7 +8,7 @@ export default async function DashboardPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold tracking-tight">User Dashboard</h2>
+          <h2 className="font-headline text-2xl font-bold tracking-tight">User Dashboard</h2>
           <p className="text-muted-foreground">
             Overview of synced users and their roles.
           </p>
