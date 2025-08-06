@@ -1,23 +1,23 @@
 import 'dotenv/config';
-import { PING_COMMAND, HELLO_COMMAND } from './commands.js';
+import { PING_COMMAND, HELLO_COMMAND, BAN_COMMAND, MUTE_COMMAND, JAM_COMMAND } from './commands.js';
 import { DiscordRequest } from './utils.js';
 
-async function registerCommands() {
-  if (!process.env.DISCORD_APPLICATION_ID) {
-    console.error('DISCORD_APPLICATION_ID is not set in your .env file.');
-    process.exit(1);
-  }
+if (!process.env.DISCORD_APPLICATION_ID) {
+  throw new Error('DISCORD_APPLICATION_ID is not set in your .env file.');
+}
 
-  const allCommands = [PING_COMMAND, HELLO_COMMAND];
+// The command list to register.
+const ALL_COMMANDS = [PING_COMMAND, HELLO_COMMAND, BAN_COMMAND, MUTE_COMMAND, JAM_COMMAND];
+
+async function registerCommands(appId, commands) {
+  const endpoint = `applications/${appId}/commands`;
   try {
-    const endpoint = `applications/${process.env.DISCORD_APPLICATION_ID}/commands`;
-    // This is a global command. It may take up to 1 hour to show up in the server.
-    const res = await DiscordRequest(endpoint, { method: 'PUT', body: allCommands });
+    const res = await DiscordRequest(endpoint, { method: 'PUT', body: commands });
     const data = await res.json();
-    console.log('Successfully registered all commands:', data);
+    console.log('Successfully registered all commands:', data.map(c => c.name).join(', '));
   } catch (err) {
     console.error('Error registering commands:', err);
   }
 }
 
-registerCommands();
+await registerCommands(process.env.DISCORD_APPLICATION_ID, ALL_COMMANDS);

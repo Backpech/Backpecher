@@ -11,8 +11,12 @@ import {
 } from 'discord-interactions';
 
 // Command imports
-import { ping } from './commands/ping';
-import { hello } from './commands/hello';
+import { ping } from '../commands/ping';
+import { hello } from '../commands/hello';
+import { ban } from '../commands/ban';
+import { mute } from '../commands/mute';
+import { jam } from '../commands/jam';
+
 
 // Type for our command handlers
 type CommandHandler = (body: any) => Promise<NextResponse>;
@@ -21,6 +25,9 @@ type CommandHandler = (body: any) => Promise<NextResponse>;
 const commandHandlers: Record<string, CommandHandler> = {
   ping,
   hello,
+  ban,
+  mute,
+  jam,
 };
 
 
@@ -28,16 +35,18 @@ export async function POST(req: Request) {
   const rawBody = await req.text();
   const signature = req.headers.get('x-signature-ed25519');
   const timestamp = req.headers.get('x-signature-timestamp');
+  const publicKey = process.env.DISCORD_PUBLIC_KEY;
 
-  if (!signature || !timestamp || !process.env.DISCORD_PUBLIC_KEY) {
-    return new NextResponse('Missing signature headers', {status: 401});
+  if (!signature || !timestamp || !publicKey) {
+    console.error('Missing signature headers or public key');
+    return new NextResponse('Bad request', {status: 400});
   }
 
   const isValidRequest = verifyKey(
     rawBody,
     signature,
     timestamp,
-    process.env.DISCORD_PUBLIC_KEY
+    publicKey,
   );
 
   if (!isValidRequest) {
