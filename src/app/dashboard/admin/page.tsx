@@ -72,7 +72,7 @@ export default function AdminPage() {
     <div className="grid gap-8 lg:grid-cols-2">
       <Card>
         <CardHeader>
-          <CardTitle>Create Role Rule</CardTitle>
+          <CardTitle>Crie</CardTitle>
           <CardDescription>
             Define automated role assignment rules for new users.
           </CardDescription>

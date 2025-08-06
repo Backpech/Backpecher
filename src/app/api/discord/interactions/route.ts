@@ -7,16 +7,29 @@ import {NextResponse} from 'next/server';
 import {
   InteractionType,
   InteractionResponseType,
-  InteractionResponseFlags,
   verifyKey,
 } from 'discord-interactions';
+
+// Command imports
+import { ping } from './commands/ping';
+import { hello } from './commands/hello';
+
+// Type for our command handlers
+type CommandHandler = (body: any) => Promise<NextResponse>;
+
+// Map command names to their handlers
+const commandHandlers: Record<string, CommandHandler> = {
+  ping,
+  hello,
+};
+
 
 export async function POST(req: Request) {
   const rawBody = await req.text();
   const signature = req.headers.get('x-signature-ed25519');
   const timestamp = req.headers.get('x-signature-timestamp');
 
-  if (!signature || !timestamp) {
+  if (!signature || !timestamp || !process.env.DISCORD_PUBLIC_KEY) {
     return new NextResponse('Missing signature headers', {status: 401});
   }
 
@@ -24,10 +37,11 @@ export async function POST(req: Request) {
     rawBody,
     signature,
     timestamp,
-    process.env.DISCORD_PUBLIC_KEY!
+    process.env.DISCORD_PUBLIC_KEY
   );
 
   if (!isValidRequest) {
+    console.error('Invalid signature');
     return new NextResponse('Invalid signature', {status: 401});
   }
 
@@ -42,31 +56,23 @@ export async function POST(req: Request) {
   }
 
   /**
-   * Handle slash command requests
-   * See https://discord.com/developers/docs/interactions/application-commands#slash-commands
+   * Handle slash command requests by dispatching to the correct handler
    */
   if (type === InteractionType.APPLICATION_COMMAND) {
     const {name} = data;
 
-    // This is where you'll handle your commands
-    if (name === 'ping') {
-      return NextResponse.json({
-        type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-        data: {
-          content: 'pong!',
-        },
-      });
-    }
+    const handler = commandHandlers[name];
 
-    // Example of an ephemeral message
-    if (name === 'hello') {
-      return NextResponse.json({
-        type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-        data: {
-          content: `Hello there!`,
-          flags: InteractionResponseFlags.EPHEMERAL,
-        },
-      });
+    if (handler) {
+      try {
+        return await handler(body);
+      } catch (error) {
+        console.error(`Error handling command "${name}":`, error);
+        return new NextResponse('Error handling command', { status: 500 });
+      }
+    } else {
+      console.warn(`Unhandled command: ${name}`);
+      return new NextResponse('Unhandled command', { status: 404 });
     }
   }
 
