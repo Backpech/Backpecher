@@ -8,8 +8,6 @@
 ![TypeScript](https://skillicons.dev/icons?i=typescript)
 ![Next](https://skillicons.dev/icons?i=next)
 ![Tailwind](https://skillicons.dev/icons?i=tailwind)
-![Genkit](https://skillicons.dev/icons?i=genkit)
-![Gemini](https://skillicons.dev/icons?i=gemini)
 ![javascript](https://skillicons.dev/icons?i=javascript)
 ![Firebase](https://skillicons.dev/icons?i=firebase)
 
